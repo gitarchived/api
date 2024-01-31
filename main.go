@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gitarchived/api/models"
+	"github.com/gitarchived/api/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -36,6 +37,8 @@ func main() {
 			"message": "OK",
 		})
 	})
+
+	app.Post("/create", func(c *fiber.Ctx) error { return routes.Create(c, db) })
 
 	app.Listen(":8080")
 }
