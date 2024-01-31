@@ -48,7 +48,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		Host: body.Host,
 	}
 
-	if result := db.First(&repository); result.Error == nil {
+	if result := db.Select("id").Where("name = ? AND host = ?", body.Repo, body.Host).First(&repository); result.RowsAffected != 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Repository already added",
