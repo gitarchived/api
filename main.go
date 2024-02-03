@@ -39,6 +39,7 @@ func main() {
 	})
 
 	app.Post("/create", func(c *fiber.Ctx) error { return routes.Create(c, db) })
+	app.Get("/search", func(c *fiber.Ctx) error { return routes.Search(c, db) })
 
 	app.Listen(":8080")
 }

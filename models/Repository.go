@@ -8,3 +8,10 @@ type Repository struct {
 	Name string // `user/repo`
 	Host string // `github`
 }
+
+type RepositoryResponse struct {
+	ID        uint   `json:"id"`
+	Name      string `json:"name"`
+	Host      string `json:"host"`
+	CreatedAt string `json:"createdAt"`
+}
