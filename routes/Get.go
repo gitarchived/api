@@ -33,10 +33,11 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	formattedResults := models.RepositoryResponse{
-		ID:        results.ID,
-		Name:      results.Name,
-		Host:      results.Host,
-		CreatedAt: results.CreatedAt.Format(time.RFC3339),
+		ID:         results.ID,
+		Name:       results.Name,
+		Host:       results.Host,
+		CreatedAt:  results.CreatedAt.Format(time.RFC3339),
+		LastCommit: results.LastCommit,
 	}
 
 	return c.Status(200).JSON(fiber.Map{

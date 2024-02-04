@@ -43,9 +43,19 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	lastCommit, err := utils.GetLastCommit(body.Repo)
+
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  500,
+			"message": "Internal Server Error",
+		})
+	}
+
 	repository := &models.Repository{
-		Name: body.Repo,
-		Host: body.Host,
+		Name:       body.Repo,
+		Host:       body.Host,
+		LastCommit: lastCommit,
 	}
 
 	if result := db.Select("id").Where("name = ? AND host = ?", body.Repo, body.Host).First(&repository); result.RowsAffected != 0 {

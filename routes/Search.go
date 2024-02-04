@@ -33,10 +33,11 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 
 	for _, result := range results {
 		formattedResults = append(formattedResults, models.RepositoryResponse{
-			ID:        result.ID,
-			Name:      result.Name,
-			Host:      result.Host,
-			CreatedAt: result.CreatedAt.Format(time.RFC3339),
+			ID:         result.ID,
+			Name:       result.Name,
+			Host:       result.Host,
+			CreatedAt:  result.CreatedAt.Format(time.RFC3339),
+			LastCommit: result.LastCommit,
 		})
 	}
 
