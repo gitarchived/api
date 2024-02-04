@@ -36,10 +36,10 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if exist := utils.RepoExist(body.Repo); !exist {
+	if _, err := utils.IsEligible(body.Repo); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
-			"message": "Repository not found",
+			"message": err.Error(),
 		})
 	}
 
