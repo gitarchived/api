@@ -13,12 +13,12 @@ type RepoResponse struct {
 	StargazersCount int `json:"stargazers_count"`
 }
 
-func IsEligible(repo string) (bool, error) {
+func IsEligible(owner string, name string) (bool, error) {
 	client := resty.New()
 
 	resp, err := client.R().
 		SetResult(&RepoResponse{}).
-		Get("https://api.github.com/repos/" + repo)
+		Get("https://api.github.com/repos/" + owner + "/" + name)
 
 	if err != nil {
 		return false, errors.New("Error while fetching repository")

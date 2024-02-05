@@ -8,8 +8,9 @@ import (
 )
 
 type CreateRequestBody struct {
-	Host string `json:"host"` // Only github supported for now
-	Repo string `json:"repo"`
+	Host  string `json:"host"` // Only github supported for now
+	Owner string `json:"owner"`
+	Name  string `json:"name"`
 }
 
 func Create(c *fiber.Ctx, db *gorm.DB) error {
@@ -22,7 +23,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if body.Host == "" || body.Repo == "" {
+	if body.Host == "" || body.Owner == "" || body.Name == "" {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Bad Request",
@@ -36,7 +37,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if _, err := utils.IsEligible(body.Repo); err != nil {
+	if _, err := utils.IsEligible(body.Owner, body.Name); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": err.Error(),
@@ -44,13 +45,14 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	repository := &models.Repository{
-		Name:       body.Repo,
 		Host:       body.Host,
+		Owner:      body.Owner,
+		Name:       body.Name,
 		Deleted:    false,
 		LastCommit: "",
 	}
 
-	if result := db.Select("id").Where("name = ? AND host = ?", body.Repo, body.Host).First(&repository); result.RowsAffected != 0 {
+	if result := db.Select("id").Where("owner = ? AND name = ? AND host = ?", body.Owner, body.Name, body.Host).First(&repository); result.RowsAffected != 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Repository already added",
@@ -70,6 +72,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		"status":  200,
 		"message": "Repository added successfully",
 		"host":    body.Host,
-		"repo":    body.Repo,
+		"owner":   body.Owner,
+		"name":    body.Name,
 	})
 }

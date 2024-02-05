@@ -12,7 +12,6 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 	host := c.Params("host")
 	owner := c.Params("owner")
 	name := c.Params("name")
-	fullName := owner + "/" + name
 
 	if owner == "" || name == "" {
 		return c.Status(400).JSON(fiber.Map{
@@ -23,7 +22,7 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 
 	var results models.Repository
 
-	data := db.Where("host = ? AND name = ?", host, fullName).First(&results)
+	data := db.Where("host = ? AND owner = ? AND name = ?", host, owner, name).First(&results)
 
 	if data.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -34,8 +33,9 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 
 	formattedResults := models.RepositoryResponse{
 		ID:         results.ID,
-		Name:       results.Name,
 		Host:       results.Host,
+		Owner:      results.Owner,
+		Name:       results.Name,
 		Deleted:    results.Deleted,
 		CreatedAt:  results.CreatedAt.Format(time.RFC3339),
 		LastCommit: results.LastCommit,

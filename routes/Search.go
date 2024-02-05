@@ -34,6 +34,7 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 	for _, result := range results {
 		formattedResults = append(formattedResults, models.RepositoryResponse{
 			ID:         result.ID,
+			Owner:      result.Owner,
 			Name:       result.Name,
 			Host:       result.Host,
 			Deleted:    result.Deleted,
