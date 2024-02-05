@@ -36,6 +36,7 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 			ID:         result.ID,
 			Name:       result.Name,
 			Host:       result.Host,
+			Deleted:    result.Deleted,
 			CreatedAt:  result.CreatedAt.Format(time.RFC3339),
 			LastCommit: result.LastCommit,
 		})

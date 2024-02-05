@@ -46,6 +46,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 	repository := &models.Repository{
 		Name:       body.Repo,
 		Host:       body.Host,
+		Deleted:    false,
 		LastCommit: "",
 	}
 

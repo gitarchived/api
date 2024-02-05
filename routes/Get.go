@@ -36,6 +36,7 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 		ID:         results.ID,
 		Name:       results.Name,
 		Host:       results.Host,
+		Deleted:    results.Deleted,
 		CreatedAt:  results.CreatedAt.Format(time.RFC3339),
 		LastCommit: results.LastCommit,
 	}
