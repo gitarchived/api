@@ -27,7 +27,7 @@ func IsEligible(owner string, name string) (bool, error) {
 	if resp.StatusCode() == 200 {
 		repoResponse := resp.Result().(*RepoResponse)
 
-		if repoResponse.StargazersCount > 100 {
+		if repoResponse.StargazersCount > 200 {
 			return true, nil
 		} else {
 			return false, errors.New("Repository has less than 100 stars")
