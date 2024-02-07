@@ -42,6 +42,8 @@ func main() {
 		})
 	})
 
+	app.Static("/", "./public")
+
 	app.Post("/create", func(c *fiber.Ctx) error { return routes.Create(c, db) })
 	app.Get("/search", func(c *fiber.Ctx) error { return routes.Search(c, db) })
 	app.Get("/:host/:owner/:name", func(c *fiber.Ctx) error { return routes.Get(c, db) })
