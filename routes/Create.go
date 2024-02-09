@@ -30,7 +30,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if body.Host != "github" {
+	if result := db.Where("name = ?", body.Host).First(&models.Host{}); result.RowsAffected == 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Host not supported",

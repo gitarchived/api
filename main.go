@@ -30,9 +30,13 @@ func main() {
 		log.Fatal("Error connecting to database")
 	}
 
-	// Check if repository table exists
+	// Check if repository and host table exists
 	if !db.Migrator().HasTable(&models.Repository{}) {
 		db.Migrator().CreateTable(&models.Repository{})
+	}
+
+	if !db.Migrator().HasTable(&models.Host{}) {
+		db.Migrator().CreateTable(&models.Host{})
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
