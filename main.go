@@ -39,15 +39,9 @@ func main() {
 		db.Migrator().CreateTable(&models.Host{})
 	}
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(200).JSON(fiber.Map{
-			"status":  200,
-			"message": "OK",
-		})
-	})
-
 	app.Static("/", "./public")
 
+	app.Get("/", func(c *fiber.Ctx) error { return routes.Stats(c, db) })
 	app.Post("/create", func(c *fiber.Ctx) error { return routes.Create(c, db) })
 	app.Get("/search", func(c *fiber.Ctx) error { return routes.Search(c, db) })
 	app.Get("/:host/:owner/:name", func(c *fiber.Ctx) error { return routes.Get(c, db) })
