@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"time"
-
 	"github.com/gitarchived/api/models"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -38,7 +36,7 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 			Name:       result.Name,
 			Host:       result.Host,
 			Deleted:    result.Deleted,
-			CreatedAt:  result.CreatedAt.Format(time.RFC3339),
+			CreatedAt:  result.CreatedAt.Unix(),
 			LastCommit: result.LastCommit,
 		})
 	}
@@ -46,6 +44,6 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 	return c.Status(200).JSON(fiber.Map{
 		"status":  200,
 		"message": "OK",
-		"data":    formattedResults,
+		"results": formattedResults,
 	})
 }

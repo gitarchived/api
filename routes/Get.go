@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"time"
-
 	"github.com/gitarchived/api/models"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -37,7 +35,7 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 		Owner:      results.Owner,
 		Name:       results.Name,
 		Deleted:    results.Deleted,
-		CreatedAt:  results.CreatedAt.Format(time.RFC3339),
+		CreatedAt:  results.CreatedAt.Unix(),
 		LastCommit: results.LastCommit,
 	}
 

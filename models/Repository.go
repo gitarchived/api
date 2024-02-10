@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Repository struct {
 	gorm.Model
@@ -18,6 +20,6 @@ type RepositoryResponse struct {
 	Name       string `json:"name"`
 	Host       string `json:"host"`
 	Deleted    bool   `json:"deleted"`
-	CreatedAt  string `json:"createdAt"`
+	CreatedAt  int64  `json:"createdAt"`
 	LastCommit string `json:"lastCommit"`
 }
