@@ -3,12 +3,13 @@ package routes
 import (
 	"github.com/gitarchived/api/models"
 	"github.com/gitarchived/api/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type CreateRequestBody struct {
-	Url string `json:"url"`
+	Url string `json:"url" validate:"required,http_url"`
 }
 
 func Create(c *fiber.Ctx, db *gorm.DB) error {
@@ -21,7 +22,9 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if body.Url == "" {
+	validate := validator.New()
+
+	if err := validate.Struct(body); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Bad Request",
