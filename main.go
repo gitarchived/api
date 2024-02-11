@@ -27,7 +27,6 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
-		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
 	db, err := gorm.Open(postgres.Open(os.Getenv("PG_URL")), &gorm.Config{})
