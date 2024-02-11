@@ -7,6 +7,7 @@ import (
 	"github.com/gitarchived/api/models"
 	"github.com/gitarchived/api/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,6 +24,11 @@ func main() {
 	}
 
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	db, err := gorm.Open(postgres.Open(os.Getenv("PG_URL")), &gorm.Config{})
 
