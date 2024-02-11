@@ -8,9 +8,7 @@ import (
 )
 
 type CreateRequestBody struct {
-	Host  string `json:"host"` // Only github supported for now
-	Owner string `json:"owner"`
-	Name  string `json:"name"`
+	Url string `json:"url"`
 }
 
 func Create(c *fiber.Ctx, db *gorm.DB) error {
@@ -23,21 +21,33 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if body.Host == "" || body.Owner == "" || body.Name == "" {
+	if body.Url == "" {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Bad Request",
 		})
 	}
 
-	if result := db.Where("name = ?", body.Host).First(&models.Host{}); result.RowsAffected == 0 {
+	// Split url
+	domain, owner, name := utils.SplitUrl(body.Url)
+
+	if domain == "" || owner == "" || name == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"status":  400,
+			"message": "Bad Request",
+		})
+	}
+
+	var host models.Host
+
+	if result := db.Where("url = ?", "https://"+domain).First(&host); result.RowsAffected == 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Host not supported",
 		})
 	}
 
-	if _, err := utils.IsEligible(body.Owner, body.Name); err != nil {
+	if _, err := utils.IsEligible(owner, name); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": err.Error(),
@@ -45,14 +55,14 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	repository := &models.Repository{
-		Host:       body.Host,
-		Owner:      body.Owner,
-		Name:       body.Name,
+		Host:       host.Name,
+		Owner:      owner,
+		Name:       name,
 		Deleted:    false,
 		LastCommit: "",
 	}
 
-	if result := db.Select("id").Where("owner = ? AND name = ? AND host = ?", body.Owner, body.Name, body.Host).First(&repository); result.RowsAffected != 0 {
+	if result := db.Select("id").Where("owner = ? AND name = ? AND host = ?", owner, name, host).First(&repository); result.RowsAffected != 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Repository already added",
@@ -71,8 +81,8 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 	return c.Status(200).JSON(fiber.Map{
 		"status":  200,
 		"message": "Repository added successfully",
-		"host":    body.Host,
-		"owner":   body.Owner,
-		"name":    body.Name,
+		"host":    host.Name,
+		"owner":   owner,
+		"name":    name,
 	})
 }
