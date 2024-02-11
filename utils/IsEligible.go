@@ -6,8 +6,9 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-// A repo is eligible if:
-// - Have more than 1000 starts
+// This feature will be subject to change as more hosts are supported
+// The check happens through a request to the repo url
+// This change comes true at the support of new hosts
 
 type RepoResponse struct {
 	StargazersCount int `json:"stargazers_count"`
