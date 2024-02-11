@@ -18,9 +18,7 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 
 	var results []models.Repository
 
-	data := db.Where("name LIKE ?", "%"+query+"%").Find(&results)
-
-	if data.Error != nil {
+	if res := db.Where("name LIKE ? OR owner LIKE ?", query+"%", query+"%").Find(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  500,
 			"message": "Internal Server Error",
