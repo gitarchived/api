@@ -28,6 +28,13 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	if !utils.IsUrlOk(body.Url) {
+		return c.Status(400).JSON(fiber.Map{
+			"status":  400,
+			"message": "Bad Request",
+		})
+	}
+
 	// Split url
 	domain, owner, name := utils.SplitUrl(body.Url)
 
@@ -63,8 +70,8 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	if result := db.Select("id").Where("owner = ? AND name = ? AND host = ?", owner, name, host.Name).First(&repository); result.RowsAffected != 0 {
-		return c.Status(400).JSON(fiber.Map{
-			"status":  400,
+		return c.Status(409).JSON(fiber.Map{
+			"status":  409,
 			"message": "Repository already added",
 		})
 	}
