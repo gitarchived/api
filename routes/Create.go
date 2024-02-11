@@ -62,7 +62,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		LastCommit: "",
 	}
 
-	if result := db.Select("id").Where("owner = ? AND name = ? AND host = ?", owner, name, host).First(&repository); result.RowsAffected != 0 {
+	if result := db.Select("id").Where("owner = ? AND name = ? AND host = ?", owner, name, host.Name).First(&repository); result.RowsAffected != 0 {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  400,
 			"message": "Repository already added",
