@@ -31,7 +31,7 @@ func IsEligible(owner string, name string) (bool, error) {
 		if repoResponse.StargazersCount > 200 {
 			return true, nil
 		} else {
-			return false, errors.New("Repository has less than 100 stars")
+			return false, errors.New("Repository has less than 200 stars")
 		}
 	} else {
 		return false, errors.New("Repository not found")
