@@ -7,10 +7,31 @@ import (
 )
 
 func Stats(c *fiber.Ctx, db *gorm.DB) error {
-	totalRepos := db.Model(&models.Repository{}).Find(&models.Repository{}).RowsAffected
-	totalHosts := db.Model(&models.Host{}).Find(&models.Host{}).RowsAffected
-	totalDeleted := db.Model(&models.Repository{}).Where("deleted = ?", true).Find(&models.Repository{}).RowsAffected
-	totalActive := totalRepos - totalDeleted
+	var totalRepos int64
+
+	if result := db.Find(&models.Repository{}).Count(&totalRepos); result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Error fetching repositories",
+		})
+	}
+
+	var totalActive int64
+
+	if result := db.Model(&models.Repository{}).Where("deleted = false").Count(&totalActive); result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Error fetching active repositories",
+		})
+	}
+
+	totalDeleted := totalRepos - totalActive
+
+	var totalHosts int64
+
+	if result := db.Model(&models.Host{}).Count(&totalHosts); result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Error fetching hosts",
+		})
+	}
 
 	return c.Status(200).JSON(fiber.Map{
 		"repos": fiber.Map{
