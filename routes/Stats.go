@@ -33,11 +33,34 @@ func Stats(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	var lastRepos []models.Repository
+
+	if result := db.Order("created_at desc").Limit(5).Find(&lastRepos); result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Error fetching last repositories",
+		})
+	}
+
+	var formattedLastRepos []models.RepositoryResponse
+
+	for i := range lastRepos {
+		formattedLastRepos = append(formattedLastRepos, models.RepositoryResponse{
+			ID:         lastRepos[i].ID,
+			Host:       lastRepos[i].Host,
+			Owner:      lastRepos[i].Owner,
+			Name:       lastRepos[i].Name,
+			Deleted:    lastRepos[i].Deleted,
+			CreatedAt:  lastRepos[i].CreatedAt.Unix(),
+			LastCommit: lastRepos[i].LastCommit,
+		})
+	}
+
 	return c.Status(200).JSON(fiber.Map{
 		"repos": fiber.Map{
 			"total":   totalRepos,
 			"active":  totalActive,
 			"deleted": totalDeleted,
+			"recent":  formattedLastRepos,
 		},
 		"hosts": fiber.Map{
 			"total": totalHosts,
