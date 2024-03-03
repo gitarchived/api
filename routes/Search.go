@@ -18,7 +18,7 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 
 	var results []models.Repository
 
-	if res := db.Where("LOWER(name) LIKE ?", "%"+query+"%").Or("LOWER(owner) LIKE ?", "%"+query+"%").Find(&results); res.Error != nil {
+	if res := db.Where("LOWER(name) LIKE LOWER(?)", "%"+query+"%").Or("LOWER(owner) LIKE LOWER(?)", "%"+query+"%").Find(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  500,
 			"message": "Internal Server Error",
