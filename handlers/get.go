@@ -1,7 +1,7 @@
-package routes
+package handlers
 
 import (
-	"github.com/gitarchived/api/models"
+	"github.com/gitarchived/api/data"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -18,18 +18,16 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	var results models.Repository
+	var results data.Repository
 
-	data := db.Where("host = ? AND owner = ? AND name = ?", host, owner, name).First(&results)
-
-	if data.Error != nil {
+	if res := db.Where("host = ? AND owner = ? AND name = ?", host, owner, name).First(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  500,
 			"message": "Internal Server Error",
 		})
 	}
 
-	formattedResults := models.RepositoryResponse{
+	formattedResults := data.RepositoryResponse{
 		ID:         results.ID,
 		Host:       results.Host,
 		Owner:      results.Owner,

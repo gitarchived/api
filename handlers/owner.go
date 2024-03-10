@@ -1,7 +1,7 @@
-package routes
+package handlers
 
 import (
-	"github.com/gitarchived/api/models"
+	"github.com/gitarchived/api/data"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -10,7 +10,7 @@ func Owner(c *fiber.Ctx, db *gorm.DB) error {
 	host := c.Params("host")
 	owner := c.Params("owner")
 
-	var results []models.Repository
+	var results []data.Repository
 
 	if res := db.Where("host = ? AND owner = ?", host, owner).Find(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{

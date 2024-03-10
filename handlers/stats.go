@@ -1,7 +1,7 @@
-package routes
+package handlers
 
 import (
-	"github.com/gitarchived/api/models"
+	"github.com/gitarchived/api/data"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -9,7 +9,7 @@ import (
 func Stats(c *fiber.Ctx, db *gorm.DB) error {
 	var totalRepos int64
 
-	if result := db.Find(&models.Repository{}).Count(&totalRepos); result.Error != nil {
+	if result := db.Find(&data.Repository{}).Count(&totalRepos); result.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": "Error fetching repositories",
 		})
@@ -17,7 +17,7 @@ func Stats(c *fiber.Ctx, db *gorm.DB) error {
 
 	var totalActive int64
 
-	if result := db.Model(&models.Repository{}).Where("deleted = false").Count(&totalActive); result.Error != nil {
+	if result := db.Model(&data.Repository{}).Where("deleted = false").Count(&totalActive); result.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": "Error fetching active repositories",
 		})
@@ -27,13 +27,13 @@ func Stats(c *fiber.Ctx, db *gorm.DB) error {
 
 	var totalHosts int64
 
-	if result := db.Model(&models.Host{}).Count(&totalHosts); result.Error != nil {
+	if result := db.Model(&data.Host{}).Count(&totalHosts); result.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": "Error fetching hosts",
 		})
 	}
 
-	var lastRepos []models.Repository
+	var lastRepos []data.Repository
 
 	if result := db.Order("created_at desc").Limit(5).Find(&lastRepos); result.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -41,10 +41,10 @@ func Stats(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	var formattedLastRepos []models.RepositoryResponse
+	var formattedLastRepos []data.RepositoryResponse
 
 	for i := range lastRepos {
-		formattedLastRepos = append(formattedLastRepos, models.RepositoryResponse{
+		formattedLastRepos = append(formattedLastRepos, data.RepositoryResponse{
 			ID:         lastRepos[i].ID,
 			Host:       lastRepos[i].Host,
 			Owner:      lastRepos[i].Owner,

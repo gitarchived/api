@@ -1,7 +1,7 @@
-package routes
+package handlers
 
 import (
-	"github.com/gitarchived/api/models"
+	"github.com/gitarchived/api/data"
 	"github.com/gitarchived/api/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -48,7 +48,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	var host models.Host
+	var host data.Host
 
 	if result := db.Where("url = ?", "https://"+domain).First(&host); result.RowsAffected == 0 {
 		return c.Status(400).JSON(fiber.Map{
@@ -64,7 +64,7 @@ func Create(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	repository := &models.Repository{
+	repository := &data.Repository{
 		Host:       host.Name,
 		Owner:      owner,
 		Name:       name,

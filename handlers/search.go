@@ -1,7 +1,7 @@
-package routes
+package handlers
 
 import (
-	"github.com/gitarchived/api/models"
+	"github.com/gitarchived/api/data"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -16,7 +16,7 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	var results []models.Repository
+	var results []data.Repository
 
 	if res := db.Where("LOWER(name) LIKE LOWER(?)", "%"+query+"%").Or("LOWER(owner) LIKE LOWER(?)", "%"+query+"%").Find(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -25,10 +25,10 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	var formattedResults []models.RepositoryResponse
+	var formattedResults []data.RepositoryResponse
 
 	for _, result := range results {
-		formattedResults = append(formattedResults, models.RepositoryResponse{
+		formattedResults = append(formattedResults, data.RepositoryResponse{
 			ID:         result.ID,
 			Owner:      result.Owner,
 			Name:       result.Name,
