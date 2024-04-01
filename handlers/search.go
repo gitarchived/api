@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gitarchived/api/data"
+	"github.com/gitarchived/api/utils"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -16,9 +17,19 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	var formattedQuery = utils.ExamineQuery(query)
 	var results []data.Repository
 
-	if res := db.Where("LOWER(name) LIKE LOWER(?)", "%"+query+"%").Or("LOWER(owner) LIKE LOWER(?)", "%"+query+"%").Find(&results); res.Error != nil {
+	dbQuery := db.Model(&data.Repository{})
+
+	if formattedQuery.Owner == formattedQuery.Name {
+		dbQuery = dbQuery.Where("LOWER(owner) LIKE LOWER(?)", "%"+formattedQuery.Owner+"%")
+		dbQuery = dbQuery.Or("LOWER(name) LIKE LOWER(?)", "%"+formattedQuery.Name+"%")
+	} else {
+		dbQuery = dbQuery.Where("owner = ? AND LOWER(name) LIKE LOWER(?)", formattedQuery.Owner, "%"+formattedQuery.Name+"%")
+	}
+
+	if res := dbQuery.Find(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  500,
 			"message": "Internal Server Error",
