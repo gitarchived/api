@@ -19,14 +19,18 @@ func Owner(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-  formattedResults := data.RepositoryResponse{
-		ID:         results.ID,
-		Host:       results.Host,
-		Owner:      results.Owner,
-		Name:       results.Name,
-		Deleted:    results.Deleted,
-		CreatedAt:  results.CreatedAt.Unix(),
-		LastCommit: results.LastCommit,
+	var formattedResults []data.RepositoryResponse
+
+	for _, result := range results {
+		formattedResults = append(formattedResults, data.RepositoryResponse{
+			ID:         result.ID,
+			Host:       result.Host,
+			Owner:      result.Owner,
+			Name:       result.Name,
+			Deleted:    result.Deleted,
+			CreatedAt:  result.CreatedAt.Unix(),
+			LastCommit: result.LastCommit,
+		})
 	}
 
 	return c.Status(200).JSON(fiber.Map{

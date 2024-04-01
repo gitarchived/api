@@ -18,28 +18,28 @@ func Get(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	var results data.Repository
+	var result data.Repository
 
-	if res := db.Where("host = ? AND owner = ? AND name = ?", host, owner, name).First(&results); res.Error != nil {
+	if res := db.Where("host = ? AND owner = ? AND name = ?", host, owner, name).First(&result); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  500,
 			"message": "Internal Server Error",
 		})
 	}
 
-	formattedResults := data.RepositoryResponse{
-		ID:         results.ID,
-		Host:       results.Host,
-		Owner:      results.Owner,
-		Name:       results.Name,
-		Deleted:    results.Deleted,
-		CreatedAt:  results.CreatedAt.Unix(),
-		LastCommit: results.LastCommit,
+	formattedResult := data.RepositoryResponse{
+		ID:         result.ID,
+		Host:       result.Host,
+		Owner:      result.Owner,
+		Name:       result.Name,
+		Deleted:    result.Deleted,
+		CreatedAt:  result.CreatedAt.Unix(),
+		LastCommit: result.LastCommit,
 	}
 
 	return c.Status(200).JSON(fiber.Map{
 		"status":  200,
 		"message": "OK",
-		"data":    formattedResults,
+		"data":    formattedResult,
 	})
 }
