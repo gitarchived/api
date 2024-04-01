@@ -19,9 +19,19 @@ func Owner(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+  formattedResults := data.RepositoryResponse{
+		ID:         results.ID,
+		Host:       results.Host,
+		Owner:      results.Owner,
+		Name:       results.Name,
+		Deleted:    results.Deleted,
+		CreatedAt:  results.CreatedAt.Unix(),
+		LastCommit: results.LastCommit,
+	}
+
 	return c.Status(200).JSON(fiber.Map{
 		"status":  200,
 		"message": "OK",
-		"results": results,
+		"results": formattedResults,
 	})
 }
