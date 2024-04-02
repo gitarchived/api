@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/gitarchived/api/data"
 	"github.com/gitarchived/api/utils"
 	"github.com/gofiber/fiber/v2"
@@ -9,6 +11,11 @@ import (
 
 func Search(c *fiber.Ctx, db *gorm.DB) error {
 	query := c.Query("q")
+	index, err := strconv.Atoi(c.Query("index"))
+
+	if err != nil || index < 0 {
+		index = 1
+	}
 
 	if query == "" {
 		return c.Status(400).JSON(fiber.Map{
@@ -28,6 +35,8 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 	} else {
 		dbQuery = dbQuery.Where("owner = ? AND LOWER(name) LIKE LOWER(?)", formattedQuery.Owner, "%"+formattedQuery.Name+"%")
 	}
+
+	dbQuery.Limit(10).Offset((index - 1) * 10)
 
 	if res := dbQuery.Find(&results); res.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -51,8 +60,9 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	return c.Status(200).JSON(fiber.Map{
-		"status":  200,
-		"message": "OK",
-		"results": formattedResults,
+		"status":       200,
+		"message":      "OK",
+		"continuation": index + 1,
+		"results":      formattedResults,
 	})
 }
