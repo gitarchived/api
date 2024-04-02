@@ -60,9 +60,10 @@ func Search(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	return c.Status(200).JSON(fiber.Map{
-		"status":       200,
-		"message":      "OK",
-		"continuation": index + 1,
-		"results":      formattedResults,
+		"status":   200,
+		"message":  "OK",
+		"continue": len(results) == 10,
+		"index":    index,
+		"results":  formattedResults,
 	})
 }
