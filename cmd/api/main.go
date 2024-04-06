@@ -37,5 +37,12 @@ func main() {
 	app.Get("/:host/:owner/:name", func(c *fiber.Ctx) error { return handlers.Get(c, db) })
 	app.Get("/:host/:owner", func(c *fiber.Ctx) error { return handlers.Owner(c, db) })
 
+	app.Use(func(c *fiber.Ctx) error {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "Not Found",
+			"status":  404,
+		})
+	})
+
 	app.Listen(":8080")
 }
